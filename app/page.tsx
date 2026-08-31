@@ -7,6 +7,8 @@ import { Hero } from '@/components/hero'
 import { UselessAI } from '@/components/useless-ai'
 import { Features } from '@/components/features'
 import { Pricing } from '@/components/pricing'
+import { Testimonials } from '@/components/testimonials'
+import { FAQ } from '@/components/faq'
 import { SiteFooter } from '@/components/site-footer'
 
 export default function Page() {
@@ -36,6 +38,8 @@ export default function Page() {
             <UselessAI />
             <Features />
             <Pricing />
+	    <Testimonials />
+	    <FAQ />
           </div>
         ))}
         <SiteFooter />

@@ -1,20 +1,14 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
+import { LanguageProvider } from '@/components/language-provider'
 import './globals.css'
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space-grotesk',
-})
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-space-grotesk' })
 
 export const metadata: Metadata = {
-  title: 'Flowly.ai — L\u2019IA qui ne sert absolument à rien',
+  title: 'Flowly.ai — L’IA qui ne sert absolument à rien',
   description:
     'Flowly.ai synergise vos workflows avec une IA de pointe qui, en toute transparence, ne fait strictement rien. À partir de 499€/mois.',
   generator: 'v0.app',
@@ -33,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`dark bg-background ${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="font-sans antialiased">
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
