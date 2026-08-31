@@ -2,8 +2,11 @@
 
 import { Sparkles } from 'lucide-react'
 import { ConfettiButton } from './confetti-provider'
+import { useLanguage } from './language-provider'
 
 export function SiteFooter() {
+  const { t } = useLanguage()
+
   return (
     <>
       <section className="mx-auto max-w-4xl px-6 py-24">
@@ -13,14 +16,13 @@ export function SiteFooter() {
             className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-primary/10 blur-3xl"
           />
           <h2 className="relative font-display text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-            Prêt à ne rien changer à votre vie&nbsp;?
+            {t.footer.ctaTitle}
           </h2>
           <p className="relative mx-auto mt-4 max-w-xl text-muted-foreground text-pretty">
-            Rejoignez les 0 entreprises qui font déjà confiance à Flowly.ai pour
-            ne strictement rien accomplir. Le premier clic est offert.
+            {t.footer.ctaSubtitle}
           </p>
           <ConfettiButton className="relative mt-8 rounded-xl bg-primary px-8 py-3.5 text-base font-semibold text-primary-foreground transition-transform hover:scale-[1.03] active:scale-95">
-            Cliquer pour des confettis
+            {t.footer.ctaButton}
           </ConfettiButton>
         </div>
       </section>
@@ -36,18 +38,17 @@ export function SiteFooter() {
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Flowly.ai. Aucun droit réservé, aucune
-            fonctionnalité livrée.
+            © {new Date().getFullYear()} Flowly.ai. {t.footer.rights}
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
             <a href="#" className="transition-colors hover:text-foreground">
-              Conditions
+              {t.footer.links.terms}
             </a>
             <a href="#" className="transition-colors hover:text-foreground">
-              Vie privée
+              {t.footer.links.privacy}
             </a>
             <a href="#" className="transition-colors hover:text-foreground">
-              Statut (down)
+              {t.footer.links.status}
             </a>
           </div>
         </div>
