@@ -22,7 +22,7 @@ export function VisitorCounter() {
     }
 
     // 2. NOUVEAU VISITEUR : On incrémente via /up/
-    fetch(`https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`)
+    fetch(`https://counterapi.com/api/${WORKSPACE}/inc/${COUNTER}`)
       .then((res) => {
         if (!res.ok) throw new Error('Erreur réseau CounterAPI')
         return res.json()
