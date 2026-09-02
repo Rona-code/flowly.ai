@@ -7,33 +7,36 @@ export function VisitorCounter() {
   const [count, setCount] = useState<number | null>(null)
 
   useEffect(() => {
-    // Un espace de nom unique pour ton projet
-    const NAMESPACE = 'flowly-ai-prod-2026'
-    const KEY = 'unique-visitors'
+    const WORKSPACE = 'flowly-ai-prod-2026'
+    const COUNTER = 'unique-visitors'
     const HAS_VISITED_KEY = 'flowly_has_visited'
 
     const hasVisited = localStorage.getItem(HAS_VISITED_KEY)
 
-    // hit = incrémente de +1 | get = simple lecture
+    // Si nouveau visiteur: /up (incrémente)
+    // Si déjà visité: /get (lecture seule)
     const endpoint = !hasVisited
-      ? `https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`
-      : `https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`
+      ? `https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`
+      : `https://counterapi.com/api/${WORKSPACE}/get/${COUNTER}`
 
     fetch(endpoint)
       .then((res) => {
-        if (!res.ok) throw new Error('Erreur API')
+        if (!res.ok) throw new Error('Erreur réseau')
         return res.json()
       })
       .then((data) => {
-        if (typeof data.value === 'number') {
-          setCount(data.value)
+        // Sur counterapi.com, la valeur de l'incrément se trouve dans up_count ou value
+        const total = data.up_count ?? data.value
+
+        if (typeof total === 'number') {
+          setCount(total)
           if (!hasVisited) {
             localStorage.setItem(HAS_VISITED_KEY, 'true')
           }
         }
       })
       .catch((err) => {
-        console.error('Erreur lors du comptage :', err)
+        console.error('Erreur lors de la récupération des visites :', err)
       })
   }, [])
 
