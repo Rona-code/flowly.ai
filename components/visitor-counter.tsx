@@ -9,37 +9,35 @@ export function VisitorCounter() {
   useEffect(() => {
     const WORKSPACE = 'flowly-ai-prod-2026'
     const COUNTER = 'unique-visitors'
-    const VISITED_KEY = 'flowly_has_visited'
-    const COUNT_CACHE_KEY = 'flowly_unique_count'
+    const HAS_VISITED_KEY = 'flowly_has_visited'
 
-    const hasVisited = localStorage.getItem(VISITED_KEY)
-    const cachedCount = localStorage.getItem(COUNT_CACHE_KEY)
+    const hasVisited = localStorage.getItem(HAS_VISITED_KEY)
 
-    // 1. VISITEUR CONNU : On affiche la valeur stockée sans refaire d'appel HTTP
-    if (hasVisited && cachedCount) {
-      setCount(parseInt(cachedCount, 10))
-      return
-    }
+    // Si nouveau visiteur : /up/ (incrémente de +1)
+    // Si déjà visité : /get/ (lecture simple de la valeur du compteur)
+    const endpoint = !hasVisited
+      ? `https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`
+      : `https://counterapi.com/api/${WORKSPACE}/get/${COUNTER}`
 
-    // 2. NOUVEAU VISITEUR : On incrémente via /up/
-    fetch(`https://counterapi.com/api/${WORKSPACE}/inc/${COUNTER}`)
+    fetch(endpoint)
       .then((res) => {
         if (!res.ok) throw new Error('Erreur réseau CounterAPI')
         return res.json()
       })
       .then((data) => {
-        // 'up_count' donne le nombre exact d'incréments uniques (colonne INC)
-        const uniqueVisitors = data.up_count ?? data.value
+        // Extraction stricte de la valeur du compteur
+        const total = data?.value ?? data?.count
 
-        if (typeof uniqueVisitors === 'number') {
-          setCount(uniqueVisitors)
-          // On marque le visiteur comme connu et on enregistre le score
-          localStorage.setItem(VISITED_KEY, 'true')
-          localStorage.setItem(COUNT_CACHE_KEY, uniqueVisitors.toString())
+        if (typeof total === 'number') {
+          setCount(total)
+          // Marquer la visite uniquement si la requête s'est déroulée avec succès
+          if (!hasVisited) {
+            localStorage.setItem(HAS_VISITED_KEY, 'true')
+          }
         }
       })
       .catch((err) => {
-        console.error('Erreur lors du comptage des visiteurs :', err)
+        console.error('Erreur lors de la récupération du compteur :', err)
       })
   }, [])
 
