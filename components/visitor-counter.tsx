@@ -13,11 +13,11 @@ export function VisitorCounter() {
 
     const hasVisited = localStorage.getItem(HAS_VISITED_KEY)
 
-    // Si nouveau visiteur: incrémente (+1)
-    // Si déjà visité: interroge l'endpoint /up/ sans incrémenter (inc=0)
+    // Si nouveau visiteur -> /up (incrémente INC)
+    // Si déjà visité -> /stats (lit les statistiques exactes sans incrémenter)
     const endpoint = !hasVisited
       ? `https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`
-      : `https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}?inc=0`
+      : `https://counterapi.com/api/${WORKSPACE}/stats/${COUNTER}`
 
     fetch(endpoint)
       .then((res) => {
@@ -25,11 +25,12 @@ export function VisitorCounter() {
         return res.json()
       })
       .then((data) => {
-        // 'value' sur l'endpoint /up/ correspond directement à la métrique INC
-        const total = data.value ?? data.up_count
+        // En mode /up, la valeur est dans data.value
+        // En mode /stats, la valeur exacte des incréments est dans data.up_count ou data.up
+        const incValue = data.up_count ?? data.up ?? data.value
 
-        if (typeof total === 'number') {
-          setCount(total)
+        if (typeof incValue === 'number') {
+          setCount(incValue)
           if (!hasVisited) {
             localStorage.setItem(HAS_VISITED_KEY, 'true')
           }
