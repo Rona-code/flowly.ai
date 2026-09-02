@@ -7,38 +7,33 @@ export function VisitorCounter() {
   const [count, setCount] = useState<number | null>(null)
 
   useEffect(() => {
+    // Un espace de nom unique pour ton projet
     const NAMESPACE = 'flowly-ai-prod-2026'
     const KEY = 'unique-visitors'
-    const VISITED_KEY = 'flowly_has_visited'
+    const HAS_VISITED_KEY = 'flowly_has_visited'
 
-    const hasVisited = localStorage.getItem(VISITED_KEY)
+    const hasVisited = localStorage.getItem(HAS_VISITED_KEY)
 
-    // Si nouveau visiteur : incrémentation (+1)
-    // Si visiteur connu : lecture simple
-    const url = !hasVisited
-      ? `https://api.counterapi.dev/v1/${NAMESPACE}/${KEY}/up`
-      : `https://api.counterapi.dev/v1/${NAMESPACE}/${KEY}/`
+    // hit = incrémente de +1 | get = simple lecture
+    const endpoint = !hasVisited
+      ? `https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`
+      : `https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`
 
-    fetch(url)
+    fetch(endpoint)
       .then((res) => {
         if (!res.ok) throw new Error('Erreur API')
         return res.json()
       })
       .then((data) => {
-        // L'API renvoie { count: X }
-        const total = data?.count
-
-        if (typeof total === 'number') {
-          setCount(total)
+        if (typeof data.value === 'number') {
+          setCount(data.value)
           if (!hasVisited) {
-            localStorage.setItem(VISITED_KEY, 'true')
+            localStorage.setItem(HAS_VISITED_KEY, 'true')
           }
         }
       })
       .catch((err) => {
         console.error('Erreur lors du comptage :', err)
-        // Fallback visuel en cas de blocage d'adblocker
-        setCount(12)
       })
   }, [])
 
