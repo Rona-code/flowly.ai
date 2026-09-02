@@ -9,35 +9,36 @@ export function VisitorCounter() {
   useEffect(() => {
     const WORKSPACE = 'flowly-ai-prod-2026'
     const COUNTER = 'unique-visitors'
-    const HAS_VISITED_KEY = 'flowly_has_visited'
+    const VISITED_KEY = 'flowly_has_visited'
+    const CACHED_COUNT_KEY = 'flowly_cached_count'
 
-    const hasVisited = localStorage.getItem(HAS_VISITED_KEY)
+    const hasVisited = localStorage.getItem(VISITED_KEY)
+    const cachedCount = localStorage.getItem(CACHED_COUNT_KEY)
 
-    // Si nouveau visiteur : /up/ (incrémente de +1)
-    // Si déjà visité : /get/ (lecture simple de la valeur du compteur)
-    const endpoint = !hasVisited
-      ? `https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`
-      : `https://counterapi.com/api/${WORKSPACE}/get/${COUNTER}`
+    // Si le visiteur est déjà venu, on affiche le dernier score enregistré sans appeler l'API `/get`
+    if (hasVisited && cachedCount) {
+      setCount(parseInt(cachedCount, 10))
+      return
+    }
 
-    fetch(endpoint)
+    // NOUVEAU VISITEUR : On incrémente via /up/
+    fetch(`https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`)
       .then((res) => {
         if (!res.ok) throw new Error('Erreur réseau CounterAPI')
         return res.json()
       })
       .then((data) => {
-        // Extraction stricte de la valeur du compteur
-        const total = data?.value ?? data?.count
+        // 'data.value' contient le vrai nombre d'incréments (12)
+        const realCount = data?.value
 
-        if (typeof total === 'number') {
-          setCount(total)
-          // Marquer la visite uniquement si la requête s'est déroulée avec succès
-          if (!hasVisited) {
-            localStorage.setItem(HAS_VISITED_KEY, 'true')
-          }
+        if (typeof realCount === 'number') {
+          setCount(realCount)
+          localStorage.setItem(VISITED_KEY, 'true')
+          localStorage.setItem(CACHED_COUNT_KEY, realCount.toString())
         }
       })
       .catch((err) => {
-        console.error('Erreur lors de la récupération du compteur :', err)
+        console.error('Erreur lors de l’incrémentation :', err)
       })
   }, [])
 
