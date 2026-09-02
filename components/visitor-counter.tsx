@@ -17,7 +17,7 @@ export function VisitorCounter() {
     // Si nouveau visiteur: /up (incrémente de +1)
     // Si déjà visité: endpoint de lecture simple
     const endpoint = !hasVisited
-      ? `https://counterapi.com/api/${WORKSPACE}/inc/${COUNTER}`
+      ? `https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`
       : `https://counterapi.com/api/${WORKSPACE}/get/${COUNTER}`
 
     fetch(endpoint)
