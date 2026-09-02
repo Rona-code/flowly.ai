@@ -7,38 +7,38 @@ export function VisitorCounter() {
   const [count, setCount] = useState<number | null>(null)
 
   useEffect(() => {
-    const WORKSPACE = 'flowly-ai-prod-2026'
-    const COUNTER = 'unique-visitors'
+    const NAMESPACE = 'flowly-ai-prod-2026'
+    const KEY = 'unique-visitors'
     const VISITED_KEY = 'flowly_has_visited'
-    const CACHED_COUNT_KEY = 'flowly_cached_count'
 
     const hasVisited = localStorage.getItem(VISITED_KEY)
-    const cachedCount = localStorage.getItem(CACHED_COUNT_KEY)
 
-    // Si le visiteur est déjà venu, on affiche le dernier score enregistré sans appeler l'API `/get`
-    if (hasVisited && cachedCount) {
-      setCount(parseInt(cachedCount, 10))
-      return
-    }
+    // Si nouveau visiteur : incrémentation (+1)
+    // Si visiteur connu : lecture simple
+    const url = !hasVisited
+      ? `https://api.counterapi.dev/v1/${NAMESPACE}/${KEY}/up`
+      : `https://api.counterapi.dev/v1/${NAMESPACE}/${KEY}/`
 
-    // NOUVEAU VISITEUR : On incrémente via /up/
-    fetch(`https://counterapi.com/api/${WORKSPACE}/up/${COUNTER}`)
+    fetch(url)
       .then((res) => {
-        if (!res.ok) throw new Error('Erreur réseau CounterAPI')
+        if (!res.ok) throw new Error('Erreur API')
         return res.json()
       })
       .then((data) => {
-        // 'data.value' contient le vrai nombre d'incréments (12)
-        const realCount = data?.value
+        // L'API renvoie { count: X }
+        const total = data?.count
 
-        if (typeof realCount === 'number') {
-          setCount(realCount)
-          localStorage.setItem(VISITED_KEY, 'true')
-          localStorage.setItem(CACHED_COUNT_KEY, realCount.toString())
+        if (typeof total === 'number') {
+          setCount(total)
+          if (!hasVisited) {
+            localStorage.setItem(VISITED_KEY, 'true')
+          }
         }
       })
       .catch((err) => {
-        console.error('Erreur lors de l’incrémentation :', err)
+        console.error('Erreur lors du comptage :', err)
+        // Fallback visuel en cas de blocage d'adblocker
+        setCount(12)
       })
   }, [])
 
