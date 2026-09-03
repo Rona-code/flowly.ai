@@ -15,25 +15,35 @@ export default function Page() {
   const [blocks, setBlocks] = useState([0])
 
   useEffect(() => {
-    const handleScroll = () => {
-      // Hauteur totale de la page (compatible mobile)
+    const handleScrollCheck = () => {
       const scrollHeight = Math.max(
         document.body.scrollHeight,
         document.documentElement.scrollHeight
       )
-
-      // Position actuelle du scroll + hauteur de l'écran
       const scrollTop = window.scrollY || document.documentElement.scrollTop
       const clientHeight = window.innerHeight
 
-      // Déclenchement à 500px du bas pour anticiper le scroll rapide sur mobile
-      if (Math.ceil(scrollTop + clientHeight) >= scrollHeight - 500) {
+      // Quand l'utilisateur s'approche du bas (à moins de 600px)
+      if (scrollTop + clientHeight >= scrollHeight - 600) {
+        // 1. On injecte un nouveau bloc pour allonger la page
         setBlocks((prev) => [...prev, prev.length])
+
+        // 2. ROLLBACK TROLL : On renvoie violemment l'utilisateur vers le haut
+        window.scrollTo({
+          top: Math.max(0, scrollTop - 800),
+          behavior: 'smooth'
+        })
       }
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
+    // Événements Scroll + Touch pour bloquer l'inertie tactile sur mobile
+    window.addEventListener('scroll', handleScrollCheck, { passive: true })
+    window.addEventListener('touchmove', handleScrollCheck, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScrollCheck)
+      window.removeEventListener('touchmove', handleScrollCheck)
+    }
   }, [])
 
   return (
