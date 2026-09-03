@@ -12,19 +12,27 @@ import { FAQ } from '@/components/faq'
 import { SiteFooter } from '@/components/site-footer'
 
 export default function Page() {
-  // Un tableau de blocs qui s'agrandit à l'infini
   const [blocks, setBlocks] = useState([0])
 
   useEffect(() => {
     const handleScroll = () => {
-      // Si on approche du bas de la page (à moins de 300px)
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 300) {
-        // On génère un nouveau bloc à l'infini
+      // Hauteur totale de la page (compatible mobile)
+      const scrollHeight = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      )
+
+      // Position actuelle du scroll + hauteur de l'écran
+      const scrollTop = window.scrollY || document.documentElement.scrollTop
+      const clientHeight = window.innerHeight
+
+      // Déclenchement à 500px du bas pour anticiper le scroll rapide sur mobile
+      if (Math.ceil(scrollTop + clientHeight) >= scrollHeight - 500) {
         setBlocks((prev) => [...prev, prev.length])
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -38,8 +46,8 @@ export default function Page() {
             <UselessAI />
             <Features />
             <Pricing />
-	    <Testimonials />
-	    <FAQ />
+            <Testimonials />
+            <FAQ />
           </div>
         ))}
         <SiteFooter />
