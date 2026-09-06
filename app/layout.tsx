@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'Flowly.ai synergise vos workflows avec une IA de pointe qui, en toute transparence, ne fait strictement rien. À partir de 499€/mois.',
   generator: 'v0.app',
   verification: {
-    google: 'pnXrA1JlvCX5lA-B5MlpBfTZZMxGNjzkoDex99qdOBo"',
+    google: 'pnXrA1JlvCX5lA-B5MlpBfTZZMxGNjzkoDex99qdOBo',
   },
 }
 
